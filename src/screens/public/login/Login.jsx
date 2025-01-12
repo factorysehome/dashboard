@@ -3,36 +3,54 @@ import C_TextInput from "../../../components/commonCom/C_TextInput";
 import Logo from "../../../components/appComonent/Logo";
 import C_button from "../../../components/commonCom/C_button";
 import { Link, useNavigate } from "react-router-dom";
+import axios from 'axios';
+
+import { apiUri, BASE_URL } from "../../../services/apiEndPoints";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [pass, setPass] = useState("");
+
+  // const fullUrl = `${BASE_URL}${apiUri.auth.login}`;
+
+  const [email, setEmail] = useState("admin@gmail.com");
+  const [pass, setPass] = useState("admin");
   const navigate = useNavigate();
 
   const handleEmail = (event) => {
     setEmail(event.target.value);
   };
 
-  const handlePass = (event) => {
+  const handlePass = async (event) => {
     setPass(event.target.value);
   };
 
-  const handleClick = (event) => {
+  const handleClick = async (event) => {
     event.preventDefault();
   
-    // Retrieve users from localStorage
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const user = users.find(
-      (user) => user.email === email && user.password === pass
-    );
-  
-    if (user) {
-      const person = user.name; 
-      alert(`Welcome back, ${person}!`);
-      navigate("/afterlogin", { state: { person } }); // Redirect to dashboard or home page
-    } else {
-      alert("Invalid email or password. Please try again.");
+    try {
+      const fullUrl = `${BASE_URL}${apiUri.auth.login}`;
+
+// console.log("fullUrl",fullUrl)
+      const response= await axios.post(fullUrl,{
+        email:email,
+        password:pass
+      })
+      console.log(JSON.stringify(response.data,null,2))
+    } catch (error) {
+      
     }
+    // Retrieve users from localStorage
+    // const users = JSON.parse(localStorage.getItem("users")) || [];
+    // const user = users.find(
+    //   (user) => user.email === email && user.password === pass
+    // );
+  
+    // if (user) {
+    //   const person = user.name; 
+    //   alert(`Welcome back, ${person}!`);
+    //   navigate("/afterlogin", { state: { person } }); // Redirect to dashboard or home page
+    // } else {
+    //   alert("Invalid email or password. Please try again.");
+    // }
   };
   
 
@@ -47,7 +65,6 @@ const Login = () => {
           </i>
         </div>
 
-        {/* Right Section */}
         <div className="h-full bg-black text-white flex flex-col items-center justify-center p-4 lg:p-0">
           <form className="w-full max-w-md mx-auto border rounded-xl border-white p-6 lg:p-10 lg:py-16">
             <div className="mb-5">
@@ -64,6 +81,7 @@ const Login = () => {
                 placeholder="Email"
                 value={email}
                 name="email"
+                required
                 onChange={handleEmail}
               />
               <C_TextInput
@@ -71,11 +89,11 @@ const Login = () => {
                 type="password"
                 value={pass}
                 name="password"
+                required
                 onChange={handlePass}
               />
             </div>
 
-            {/* Remember Me Checkbox */}
             <div className="flex items-start mb-5">
               <div className="flex items-center h-5">
                 <input
