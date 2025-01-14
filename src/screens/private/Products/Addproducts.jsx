@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from 'axios'
+import { apiUri } from "../../../services/apiEndPoints";
 
 const ProductForm = () => {
   const [formData, setFormData] = useState({
@@ -134,18 +136,23 @@ const ProductForm = () => {
   };
 
   const addProductDetail = () => {
-    setProductDetails([
-      ...productDetails,
-      {
-        variants: "",
-        paperType: "",
-        numberOfPulls: "",
-        caseSize: "",
-        numberOfRolls: "",
-        sku: "",
-      },
-    ]);
+    const newProductDetail = {
+      variants: "",
+      paperType: "",
+      numberOfPulls: "",
+      caseSize: "",
+      numberOfRolls: "",
+      sku: "",
+    };
+  
+    // Filter out keys with empty values
+    const filteredProductDetail = Object.fromEntries(
+      Object.entries(newProductDetail).filter(([_, value]) => value)
+    );
+  
+    setProductDetails([...productDetails, filteredProductDetail]);
   };
+  
 
   const removeProductDetail = (index) => {
     setProductDetails(productDetails.filter((_, i) => i !== index));
@@ -167,16 +174,71 @@ const ProductForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const convertImageToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      const finalData = {
-        ...formData,
-        productDetail: productDetails,
-      };
-      console.log("Final Form Data:", finalData);
+    const isValid = validateForm();
+    console.log("Is form valid?", isValid);
+  
+    if (isValid) {
+      try {
+        let base64Image = "";
+        if (formData.image) {
+          console.log("Converting image to Base64...");
+          base64Image = await convertImageToBase64(formData.image);
+        }
+        const payload = {
+          name: formData.name,
+          category: formData.category,
+          description: formData.description,
+          productDetail: productDetails,
+          image: base64Image,
+        };
+        const fullUrl = `${apiUri.addProductApi}`;
+  
+        console.log("fullUrl:", fullUrl);
+        // console.log("Final Form Data:", JSON.stringify(payload, null, 2));
+
+        const response = await axios.post(fullUrl,payload,{
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("Final response Data:", JSON.stringify(response, null, 2));
+  
+        if (response.status === 201) {
+          setMessage("Product added successfully!");
+          setFormData({
+            category: "",
+            variants: [],
+            productName: "",
+            productImage: null,
+            sku: "",
+            description: "",
+          });
+        } else {
+          setMessage("Failed to add the product. Please try again.");
+        }
+
+
+
+      } catch (error) {
+        console.error("Error in handleSubmit:", error);
+      }
+    } else {
+      console.warn("Form validation failed.");
     }
   };
+  
 
   return (
     <form

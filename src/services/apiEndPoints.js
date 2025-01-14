@@ -1,6 +1,8 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const apiUri = {
+    addProductApi:"https://factoryseghar-backend.onrender.com/api/addItem",
+    addProductApi2:"https://mlmtesting.loca.lt/api/addItem",
     auth: {
         login:"api/auth/login",
         otplogin: '/otp-login',
@@ -11,7 +13,8 @@ const apiUri = {
     },
     jantaDrive: {
         pagename:"/pages?pagename=",
-        contact:"/contact"
+        contact:"/contact",
+        
     },
   
 };
