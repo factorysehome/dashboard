@@ -1,8 +1,23 @@
 import React, { useState } from "react";
 import axios from 'axios'
 import { apiUri } from "../../../services/apiEndPoints";
+import { CustomAlert, CustomLoading } from "../../../components";
 
 const ProductForm = () => {
+
+  const [alertMessage, setAlertMessage] = useState("");
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const showAlert = (message) => {
+    setAlertMessage(message);
+    setIsAlertVisible(true);
+  };
+
+  const closeAlert = () => {
+    setIsAlertVisible(false);
+    setAlertMessage("");
+  };
   const [formData, setFormData] = useState({
     name: "",
     image: null,
@@ -162,12 +177,18 @@ const ProductForm = () => {
     const newErrors = {};
     if (!formData.name) {
       newErrors.name = "Name is required";
+      showAlert("Name is required");
+      // alert("Name is required");
     }
     if (!formData.image) {
       newErrors.image = "Image is required";
+      showAlert("Image is required");
+
     }
     if (!formData.category) {
       newErrors.category = "Category is required";
+      showAlert("Category is required");
+
     }
 
     setErrors(newErrors);
@@ -203,7 +224,7 @@ const ProductForm = () => {
           image: base64Image,
         };
         const fullUrl = `${apiUri.addProductApi}`;
-  
+        setLoading(true)
         console.log("fullUrl:", fullUrl);
         // console.log("Final Form Data:", JSON.stringify(payload, null, 2));
 
@@ -216,7 +237,10 @@ const ProductForm = () => {
         console.log("Final response Data:", JSON.stringify(response, null, 2));
   
         if (response.status === 201) {
-          setMessage("Product added successfully!");
+          setLoading(false)
+
+          showAlert("Product added successfully!");
+          alert("Product added successfully!");
           setFormData({
             category: "",
             variants: [],
@@ -226,12 +250,14 @@ const ProductForm = () => {
             description: "",
           });
         } else {
-          setMessage("Failed to add the product. Please try again.");
+          showAlert("Failed to add the product. Please try again.");
         }
 
 
 
       } catch (error) {
+        setLoading(false)
+        showAlert("Error in handleSubmit:");
         console.error("Error in handleSubmit:", error);
       }
     } else {
@@ -241,10 +267,12 @@ const ProductForm = () => {
   
 
   return (
-    <form
+
+    <>
+       <form
       onSubmit={handleSubmit}
       className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg shadow-lg space-y-6"
-    >
+      >
       <h2 className="text-3xl font-semibold text-white text-center">Product Form</h2>
 
       <div className="space-y-6">
@@ -453,6 +481,16 @@ const ProductForm = () => {
         </div>
       </div>
     </form>
+    <CustomAlert
+        message={alertMessage}
+        visible={isAlertVisible}
+        onClose={closeAlert}
+      />
+    <CustomLoading
+        visible={loading}
+      />
+      </>
+ 
   );
 };
 
