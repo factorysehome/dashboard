@@ -70,6 +70,7 @@ const ProductForm = () => {
     { key: "Floor Cleaner", label: "Floor Cleaner" },
     { key: "Glass Cleaner", label: "Glass Cleaner" },
     { key: "Hand Wash", label: "Hand Wash" },
+   
   ];
 
   const variants = [
@@ -78,6 +79,8 @@ const ProductForm = () => {
     { key: "Sandal", label: "Sandal" },
     { key: "Lavender", label: "Lavender" },
     { key: "4 in One", label: "4 in One" },
+    { key: "Guggal", label: "Guggal" },
+    { key: "Loban", label: "Loban" },
     { key: "Food Wrapping Paper", label: "Food Wrapping Paper" },
     { key: "Available in 4 color", label: "Available in 4 color" },
     { key: "Pack of 10", label: "Pack of 10" },
@@ -85,6 +88,13 @@ const ProductForm = () => {
     { key: "Pack of 2", label: "Pack of 2" },
     { key: "PLY - 1", label: "PLY - 1" },
     { key: "PLY - 2", label: "PLY - 2" },
+    { key: "Sparkling Shine", label: "Sparkling Shine" },
+    { key: "Lemon", label: "Lemon" },
+    { key: "Power Plus", label: "Power Plus" },
+    { key: "10X Better Cleaning", label: "10X Better Cleaning" },
+    { key: "Pine Fresh", label: "Pine Fresh" },
+    { key: "9 Meter", label: "9 Meter" },
+    { key: "25 Meter", label: "25 Meter" },
   ];
 
   const paperType = [
@@ -101,8 +111,11 @@ const ProductForm = () => {
     { key: "20 Pieces", label: "20 Pieces" },
     { key: "500 ml.", label: "500 ml." },
     { key: "20 N", label: "20 N" },
+    { key: "200 N", label: "200 N" },
     { key: "200 ml.", label: "200 ml." },
     { key: "50 gm.", label: "50 gm." },
+    { key: "100 gm.", label: "100 gm." },
+    { key: "500 gm.", label: "500 gm." },
     { key: "100 ml.", label: "100 ml." },
     { key: "100 Pulls", label: "100 Pulls" },
     { key: "250 ml.", label: "250 ml." },
@@ -117,7 +130,6 @@ const ProductForm = () => {
 
   const [productDetails, setProductDetails] = useState([
     {
-      variants: "",
       paperType: "",
       numberOfPulls: "",
       numberOfRolls: "",
@@ -125,6 +137,9 @@ const ProductForm = () => {
       sku: "",
     },
   ]);
+
+  // Track selected variants globally
+  const [selectedVariants, setSelectedVariants] = useState([]);
 
   const handleFormChange = (field, value) => {
     setFormData((prev) => ({
@@ -150,9 +165,15 @@ const ProductForm = () => {
     setProductDetails(updatedDetails);
   };
 
+  const handleVariantChange = (variantKey) => {
+    const updatedVariants = selectedVariants.includes(variantKey)
+      ? selectedVariants.filter((v) => v !== variantKey) // Deselect if already selected
+      : [...selectedVariants, variantKey]; // Select if not already selected
+    setSelectedVariants(updatedVariants);
+  };
+
   const addProductDetail = () => {
     const newProductDetail = {
-      variants: "",
       paperType: "",
       numberOfPulls: "",
       numberOfRolls: "",
@@ -219,8 +240,14 @@ const ProductForm = () => {
           base64Image = await convertImageToBase64(formData.image);
         }
 
+        // Add selected variants to each product detail
+        const updatedProductDetails = productDetails.map((detail) => ({
+          ...detail,
+          variants: selectedVariants,
+        }));
+
         // Filter out empty fields from productDetails
-        const filteredProductDetails = filterEmptyFields(productDetails);
+        const filteredProductDetails = filterEmptyFields(updatedProductDetails);
 
         const payload = {
           name: formData.name,
@@ -244,10 +271,9 @@ const ProductForm = () => {
         if (response.status === 201) {
           setLoading(false);
           showAlert("Product added successfully!");
-          alert("Product added successfully!");
+          // alert("Product added successfully!");
           setFormData({
             category: "",
-            variants: [],
             productName: "",
             productImage: null,
             sku: "",
@@ -255,7 +281,6 @@ const ProductForm = () => {
           });
           setProductDetails([
             {
-              variants: "",
               paperType: "",
               numberOfPulls: "",
               numberOfRolls: "",
@@ -263,6 +288,7 @@ const ProductForm = () => {
               sku: "",
             },
           ]); // Reset product details
+          setSelectedVariants([]); // Reset selected variants
         } else {
           showAlert("Failed to add the product. Please try again.");
         }
@@ -354,28 +380,29 @@ const ProductForm = () => {
             ></textarea>
           </div>
 
+          {/* Variant Selection (Moved to the top) */}
+          <div className="space-y-2">
+            <label className="block text-lg font-medium text-white">Variant:</label>
+            <div className="flex flex-wrap gap-2">
+              {variants.map((variant) => (
+                <label key={variant.key} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    value={variant.key}
+                    checked={selectedVariants.includes(variant.key)}
+                    onChange={() => handleVariantChange(variant.key)}
+                    className="form-checkbox h-5 w-5 text-blue-600"
+                  />
+                  <span className="text-white">{variant.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
           <div>
             <h3 className="text-2xl text-white">Product Details</h3>
             {productDetails.map((detail, index) => (
               <div key={index} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block text-lg font-medium text-white">Variant:</label>
-                  <select
-                    value={detail.variants}
-                    onChange={(e) => handleDetailChange(index, "variants", e.target.value)}
-                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  >
-                    <option value="" disabled>
-                      Select Variant
-                    </option>
-                    {variants.map((variant) => (
-                      <option key={variant.key} value={variant.key}>
-                        {variant.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
                 <div className="space-y-2">
                   <label className="block text-lg font-medium text-white">SKU:</label>
                   <select
