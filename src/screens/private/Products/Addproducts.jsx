@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import axios from 'axios'
+import axios from 'axios';
 import { apiUri } from "../../../services/apiEndPoints";
 import { CustomAlert, CustomLoading } from "../../../components";
 
 const ProductForm = () => {
-
   const [alertMessage, setAlertMessage] = useState("");
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,6 +17,7 @@ const ProductForm = () => {
     setIsAlertVisible(false);
     setAlertMessage("");
   };
+
   const [formData, setFormData] = useState({
     name: "",
     image: null,
@@ -70,6 +70,7 @@ const ProductForm = () => {
     { key: "Floor Cleaner", label: "Floor Cleaner" },
     { key: "Glass Cleaner", label: "Glass Cleaner" },
     { key: "Hand Wash", label: "Hand Wash" },
+   
   ];
 
   const variants = [
@@ -78,6 +79,8 @@ const ProductForm = () => {
     { key: "Sandal", label: "Sandal" },
     { key: "Lavender", label: "Lavender" },
     { key: "4 in One", label: "4 in One" },
+    { key: "Guggal", label: "Guggal" },
+    { key: "Loban", label: "Loban" },
     { key: "Food Wrapping Paper", label: "Food Wrapping Paper" },
     { key: "Available in 4 color", label: "Available in 4 color" },
     { key: "Pack of 10", label: "Pack of 10" },
@@ -85,6 +88,13 @@ const ProductForm = () => {
     { key: "Pack of 2", label: "Pack of 2" },
     { key: "PLY - 1", label: "PLY - 1" },
     { key: "PLY - 2", label: "PLY - 2" },
+    { key: "Sparkling Shine", label: "Sparkling Shine" },
+    { key: "Lemon", label: "Lemon" },
+    { key: "Power Plus", label: "Power Plus" },
+    { key: "10X Better Cleaning", label: "10X Better Cleaning" },
+    { key: "Pine Fresh", label: "Pine Fresh" },
+    { key: "9 Meter", label: "9 Meter" },
+    { key: "25 Meter", label: "25 Meter" },
   ];
 
   const paperType = [
@@ -101,8 +111,11 @@ const ProductForm = () => {
     { key: "20 Pieces", label: "20 Pieces" },
     { key: "500 ml.", label: "500 ml." },
     { key: "20 N", label: "20 N" },
+    { key: "200 N", label: "200 N" },
     { key: "200 ml.", label: "200 ml." },
     { key: "50 gm.", label: "50 gm." },
+    { key: "100 gm.", label: "100 gm." },
+    { key: "500 gm.", label: "500 gm." },
     { key: "100 ml.", label: "100 ml." },
     { key: "100 Pulls", label: "100 Pulls" },
     { key: "250 ml.", label: "250 ml." },
@@ -117,7 +130,6 @@ const ProductForm = () => {
 
   const [productDetails, setProductDetails] = useState([
     {
-      variants: "",
       paperType: "",
       numberOfPulls: "",
       numberOfRolls: "",
@@ -125,6 +137,9 @@ const ProductForm = () => {
       sku: "",
     },
   ]);
+
+  // Track selected variants globally
+  const [selectedVariants, setSelectedVariants] = useState([]);
 
   const handleFormChange = (field, value) => {
     setFormData((prev) => ({
@@ -150,24 +165,23 @@ const ProductForm = () => {
     setProductDetails(updatedDetails);
   };
 
+  const handleVariantChange = (variantKey) => {
+    const updatedVariants = selectedVariants.includes(variantKey)
+      ? selectedVariants.filter((v) => v !== variantKey) // Deselect if already selected
+      : [...selectedVariants, variantKey]; // Select if not already selected
+    setSelectedVariants(updatedVariants);
+  };
+
   const addProductDetail = () => {
     const newProductDetail = {
-      variants: "",
       paperType: "",
       numberOfPulls: "",
-      caseSize: "",
       numberOfRolls: "",
+      caseSize: "",
       sku: "",
     };
-  
-    // Filter out keys with empty values
-    const filteredProductDetail = Object.fromEntries(
-      Object.entries(newProductDetail).filter(([_, value]) => value)
-    );
-  
-    setProductDetails([...productDetails, filteredProductDetail]);
+    setProductDetails([...productDetails, newProductDetail]);
   };
-  
 
   const removeProductDetail = (index) => {
     setProductDetails(productDetails.filter((_, i) => i !== index));
@@ -178,17 +192,14 @@ const ProductForm = () => {
     if (!formData.name) {
       newErrors.name = "Name is required";
       showAlert("Name is required");
-      // alert("Name is required");
     }
     if (!formData.image) {
       newErrors.image = "Image is required";
       showAlert("Image is required");
-
     }
     if (!formData.category) {
       newErrors.category = "Category is required";
       showAlert("Category is required");
-
     }
 
     setErrors(newErrors);
@@ -203,12 +214,24 @@ const ProductForm = () => {
       reader.onerror = (error) => reject(error);
     });
   };
-  
+
+  const filterEmptyFields = (details) => {
+    return details.map((detail) => {
+      const filteredDetail = {};
+      for (const [key, value] of Object.entries(detail)) {
+        if (value !== "" && value !== null && value !== undefined) {
+          filteredDetail[key] = value;
+        }
+      }
+      return filteredDetail;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isValid = validateForm();
     console.log("Is form valid?", isValid);
-  
+
     if (isValid) {
       try {
         let base64Image = "";
@@ -216,47 +239,61 @@ const ProductForm = () => {
           console.log("Converting image to Base64...");
           base64Image = await convertImageToBase64(formData.image);
         }
+
+        // Add selected variants to each product detail
+        const updatedProductDetails = productDetails.map((detail) => ({
+          ...detail,
+          variants: selectedVariants,
+        }));
+
+        // Filter out empty fields from productDetails
+        const filteredProductDetails = filterEmptyFields(updatedProductDetails);
+
         const payload = {
           name: formData.name,
           category: formData.category,
           description: formData.description,
-          productDetail: productDetails,
+          productDetail: filteredProductDetails, // Use filtered details
           image: base64Image,
         };
+
         const fullUrl = `${apiUri.addProductApi}`;
-        setLoading(true)
+        setLoading(true);
         console.log("fullUrl:", fullUrl);
-        // console.log("Final Form Data:", JSON.stringify(payload, null, 2));
 
-        const response = await axios.post(fullUrl,payload,{
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await axios.post(fullUrl, payload, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         console.log("Final response Data:", JSON.stringify(response, null, 2));
-  
-        if (response.status === 201) {
-          setLoading(false)
 
+        if (response.status === 201) {
+          setLoading(false);
           showAlert("Product added successfully!");
-          alert("Product added successfully!");
+          // alert("Product added successfully!");
           setFormData({
             category: "",
-            variants: [],
             productName: "",
             productImage: null,
             sku: "",
             description: "",
           });
+          setProductDetails([
+            {
+              paperType: "",
+              numberOfPulls: "",
+              numberOfRolls: "",
+              caseSize: "",
+              sku: "",
+            },
+          ]); // Reset product details
+          setSelectedVariants([]); // Reset selected variants
         } else {
           showAlert("Failed to add the product. Please try again.");
         }
-
-
-
       } catch (error) {
-        setLoading(false)
+        setLoading(false);
         showAlert("Error in handleSubmit:");
         console.error("Error in handleSubmit:", error);
       }
@@ -264,233 +301,213 @@ const ProductForm = () => {
       console.warn("Form validation failed.");
     }
   };
-  
 
   return (
-
     <>
-       <form
-      onSubmit={handleSubmit}
-      className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg shadow-lg space-y-6"
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg shadow-lg space-y-6"
       >
-      <h2 className="text-3xl font-semibold text-white text-center">Product Form</h2>
+        <h2 className="text-3xl font-semibold text-white text-center">Product Form</h2>
 
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <label className="block text-lg font-medium text-white">Name:</label>
-          <select
-            value={formData.name}
-            onChange={(e) => handleFormChange("name", e.target.value)}
-            className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="" disabled>
-              Select a Product
-            </option>
-            {Products.map((product) => (
-              <option key={product.key} value={product.key}>
-                {product.label}
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <label className="block text-lg font-medium text-white">Name:</label>
+            <select
+              value={formData.name}
+              onChange={(e) => handleFormChange("name", e.target.value)}
+              className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="" disabled>
+                Select a Product
               </option>
-            ))}
-          </select>
-          {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
-        </div>
+              {Products.map((product) => (
+                <option key={product.key} value={product.key}>
+                  {product.label}
+                </option>
+              ))}
+            </select>
+            {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
+          </div>
 
-        <div className="space-y-4">
-          <label className="block text-lg font-medium text-white">Category:</label>
-          <select
-            value={formData.category}
-            onChange={(e) => handleFormChange("category", e.target.value)}
-            className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="" disabled>
-              Select a Category
-            </option>
-            {categories.map((category) => (
-              <option key={category.key} value={category.key}>
-                {category.label}
+          <div className="space-y-4">
+            <label className="block text-lg font-medium text-white">Category:</label>
+            <select
+              value={formData.category}
+              onChange={(e) => handleFormChange("category", e.target.value)}
+              className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="" disabled>
+                Select a Category
               </option>
+              {categories.map((category) => (
+                <option key={category.key} value={category.key}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+            {errors.category && <p className="text-red-600 text-sm">{errors.category}</p>}
+          </div>
+
+          <div className="space-y-4">
+            <label className="block text-lg font-medium text-white">Image:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            {formData.image && (
+              <div className="mt-4">
+                <p className="text-white">Selected Image:</p>
+                <img
+                  src={URL.createObjectURL(formData.image)}
+                  alt="Selected"
+                  className="mt-2 w-30 h-40 object-cover rounded-lg shadow-md"
+                />
+              </div>
+            )}
+            {errors.image && <p className="text-red-600 text-sm">{errors.image}</p>}
+          </div>
+
+          <div className="space-y-4">
+            <label className="block text-lg font-medium text-white">Description:</label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => handleFormChange("description", e.target.value)}
+              className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              rows="4"
+            ></textarea>
+          </div>
+
+          {/* Variant Selection (Moved to the top) */}
+          <div className="space-y-2">
+            <label className="block text-lg font-medium text-white">Variant:</label>
+            <div className="flex flex-wrap gap-2">
+              {variants.map((variant) => (
+                <label key={variant.key} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    value={variant.key}
+                    checked={selectedVariants.includes(variant.key)}
+                    onChange={() => handleVariantChange(variant.key)}
+                    className="form-checkbox h-5 w-5 text-blue-600"
+                  />
+                  <span className="text-white">{variant.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-2xl text-white">Product Details</h3>
+            {productDetails.map((detail, index) => (
+              <div key={index} className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-lg font-medium text-white">SKU:</label>
+                  <select
+                    value={detail.sku}
+                    onChange={(e) => handleDetailChange(index, "sku", e.target.value)}
+                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="" disabled>
+                      Select SKU
+                    </option>
+                    {sku.map((item) => (
+                      <option key={item.key} value={item.key}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-lg font-medium text-white">Case Size:</label>
+                  <input
+                    type="text"
+                    value={detail.caseSize}
+                    onChange={(e) => handleDetailChange(index, "caseSize", e.target.value)}
+                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-lg font-medium text-white">Paper Type:</label>
+                  <select
+                    value={detail.paperType}
+                    onChange={(e) => handleDetailChange(index, "paperType", e.target.value)}
+                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="" disabled>
+                      Select Paper Type
+                    </option>
+                    {paperType.map((type) => (
+                      <option key={type.key} value={type.key}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-lg font-medium text-white">Number of Rolls:</label>
+                  <input
+                    type="text"
+                    value={detail.numberOfRolls}
+                    onChange={(e) => handleDetailChange(index, "numberOfRolls", e.target.value)}
+                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-lg font-medium text-white">Number of Pulls:(Per Roll)</label>
+                  <input
+                    type="text"
+                    value={detail.numberOfPulls}
+                    onChange={(e) => handleDetailChange(index, "numberOfPulls", e.target.value)}
+                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => removeProductDetail(index)}
+                    className="bg-red-500 text-white py-2 px-4 rounded-lg"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
             ))}
-          </select>
-          {errors.category && <p className="text-red-600 text-sm">{errors.category}</p>}
+            <button
+              type="button"
+              onClick={addProductDetail}
+              className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+            >
+              Add Product Detail
+            </button>
+          </div>
+
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="bg-green-500 text-white py-3 px-6 rounded-lg"
+            >
+              Submit
+            </button>
+          </div>
         </div>
-
-        {/* <div className="space-y-4">
-          <label className="block text-lg font-medium text-white">Image:</label>
-          <input
-            type="file"
-            onChange={handleImageChange}
-            className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          {errors.image && <p className="text-red-600 text-sm">{errors.image}</p>}
-        </div> */}
-
-<div className="space-y-4">
-          <label className="block text-lg font-medium text-white">Image:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          {formData.image && (
-            <div className="mt-4">
-              <p className="text-white">Selected Image:</p>
-              <img
-                src={URL.createObjectURL(formData.image)}
-                alt="Selected"
-                className="mt-2 w-30 h-40 object-cover rounded-lg shadow-md"
-              />
-            </div>
-          )}
-          {errors.image && <p className="text-red-600 text-sm">{errors.image}</p>}
-        </div>
-
-        <div className="space-y-4">
-          <label className="block text-lg font-medium text-white">Description:</label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => handleFormChange("description", e.target.value)}
-            className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            rows="4"
-          ></textarea>
-        </div>
-
-        <div>
-          <h3 className="text-2xl text-white">Product Details</h3>
-          {productDetails.map((detail, index) => (
-
-            <div key={index} className="space-y-4">
-
-
-              <div className="space-y-2">
-                <label className="block text-lg font-medium text-white">Variant:</label>
-                <select
-                  value={detail.variants}
-                  onChange={(e) => handleDetailChange(index, "variants", e.target.value)}
-                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                  <option value="" disabled>
-                    Select Variant
-                  </option>
-                  {variants.map((variant) => (
-                    <option key={variant.key} value={variant.key}>
-                      {variant.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-
-              <div className="space-y-2">
-                <label className="block text-lg font-medium text-white">SKU:</label>
-                <select
-                  value={detail.sku}
-                  onChange={(e) => handleDetailChange(index, "sku", e.target.value)}
-                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                  <option value="" disabled>
-                    Select SKU
-                  </option>
-                  {sku.map((item) => (
-                    <option key={item.key} value={item.key}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-lg font-medium text-white">Case Size:</label>
-                <input
-                  type="text"
-                  value={detail.caseSize}
-                  onChange={(e) => handleDetailChange(index, "caseSize", e.target.value)}
-                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-lg font-medium text-white">Paper Type:</label>
-                <select
-                  value={detail.paperType}
-                  onChange={(e) => handleDetailChange(index, "paperType", e.target.value)}
-                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                  <option value="" disabled>
-                    Select Paper Type
-                  </option>
-                  {paperType.map((type) => (
-                    <option key={type.key} value={type.key}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-lg font-medium text-white">Number of Rolls:</label>
-                <input
-                  type="text"
-                  value={detail.numberOfRolls}
-                  onChange={(e) => handleDetailChange(index, "numberOfRolls", e.target.value)}
-                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-lg font-medium text-white">Number of Pulls:(Per Roll )</label>
-                <input
-                  type="text"
-                  value={detail.numberOfPulls}
-                  onChange={(e) => handleDetailChange(index, "numberOfPulls", e.target.value)}
-                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-
-          
-
-    
-
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={() => removeProductDetail(index)}
-                  className="bg-red-500 text-white py-2 px-4 rounded-lg"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addProductDetail}
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg"
-          >
-            Add Product Detail
-          </button>
-        </div>
-
-        <div className="flex justify-center">
-          <button
-            type="submit"
-            className="bg-green-500 text-white py-3 px-6 rounded-lg"
-          >
-            Submit
-          </button>
-        </div>
-      </div>
-    </form>
-    <CustomAlert
+      </form>
+      <CustomAlert
         message={alertMessage}
         visible={isAlertVisible}
         onClose={closeAlert}
       />
-    <CustomLoading
+      <CustomLoading
         visible={loading}
       />
-      </>
- 
+    </>
   );
 };
 
