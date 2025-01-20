@@ -135,6 +135,7 @@ const ProductForm = () => {
       numberOfRolls: "",
       caseSize: "",
       sku: "",
+      price: " "
     },
   ]);
 
@@ -179,6 +180,7 @@ const ProductForm = () => {
       numberOfRolls: "",
       caseSize: "",
       sku: "",
+      price: " ",
     };
     setProductDetails([...productDetails, newProductDetail]);
   };
@@ -255,11 +257,15 @@ const ProductForm = () => {
           description: formData.description,
           productDetail: filteredProductDetails, // Use filtered details
           image: base64Image,
+          
+          
         };
 
         const fullUrl = `${apiUri.addProductApi}`;
-        setLoading(true);
+        // setLoading(true);
         console.log("fullUrl:", fullUrl);
+        console.log("payload", JSON.stringify(payload, null, 2))
+       
 
         const response = await axios.post(fullUrl, payload, {
           headers: {
@@ -286,6 +292,8 @@ const ProductForm = () => {
               numberOfRolls: "",
               caseSize: "",
               sku: "",
+                price: " "
+
             },
           ]); // Reset product details
           setSelectedVariants([]); // Reset selected variants
@@ -427,6 +435,15 @@ const ProductForm = () => {
                     type="text"
                     value={detail.caseSize}
                     onChange={(e) => handleDetailChange(index, "caseSize", e.target.value)}
+                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-lg font-medium text-white">Price</label>
+                  <input
+                    type="number"
+                    value={detail.price}
+                    onChange={(e) => handleDetailChange(index, "price", e.target.value)}
                     className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
