@@ -21,8 +21,11 @@ const Contact = () => {
       >
         <div className="flex flex-col items-start space-y-4 p-6 mt-12">
           <Link to="/addproducts" className="hover:underline">
-            Product
-          </Link>
+                      Add Products
+                    </Link>
+                    <Link to="/viewproduct" className="hover:underline">
+                      View Products
+                    </Link>
           <Link to="/about" className="hover:underline">
             ABOUT
           </Link>

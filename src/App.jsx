@@ -9,6 +9,7 @@ import About from "./screens/private/dashboard/About"
 import Contact from "./screens/private/dashboard/Contact"
 import Portfolio from "./screens/private/dashboard/Portfolio"
 import Service from "./screens/private/dashboard/Service"
+import Viewproduct from "./screens/private/dashboard/Viewproduct";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/contact" element={<Contact/>} />
         <Route path="/portfolio" element={<Portfolio/>} />
         <Route path="/service" element={<Service />} />
+        <Route path="/viewproduct" element={<Viewproduct />} />
       </Routes>
     </BrowserRouter>
   );
