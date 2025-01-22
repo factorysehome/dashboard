@@ -3,16 +3,15 @@ import C_TextInput from "../../../components/commonCom/C_TextInput";
 import Logo from "../../../components/appComonent/Logo";
 import C_button from "../../../components/commonCom/C_button";
 import { Link, useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 import { apiUri, BASE_URL } from "../../../services/apiEndPoints";
 
 const Login = () => {
-
   // const fullUrl = `${BASE_URL}${apiUri.auth.login}`;
 
-  const [email, setEmail] = useState("admin@gmail.com");
-  const [pass, setPass] = useState("admin");
+  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
   const navigate = useNavigate();
 
   const handleEmail = (event) => {
@@ -25,34 +24,33 @@ const Login = () => {
 
   const handleClick = async (event) => {
     event.preventDefault();
-  
-    try {
-      const fullUrl = `${BASE_URL}${apiUri.auth.login}`;
 
-// console.log("fullUrl",fullUrl)
-      const response= await axios.post(fullUrl,{
-        email:email,
-        password:pass
-      })
-      console.log(JSON.stringify(response.data,null,2))
-    } catch (error) {
-      
-    }
+    //     try {
+    //       const fullUrl = `${BASE_URL}${apiUri.auth.login}`;
+
+    // // console.log("fullUrl",fullUrl)
+    //       const response= await axios.post(fullUrl,{
+    //         email:email,
+    //         password:pass
+    //       })
+    //       console.log(JSON.stringify(response.data,null,2))
+    //     } catch (error) {
+
+    //     }
     // Retrieve users from localStorage
-    // const users = JSON.parse(localStorage.getItem("users")) || [];
-    // const user = users.find(
-    //   (user) => user.email === email && user.password === pass
-    // );
-  
-    // if (user) {
-    //   const person = user.name; 
-    //   alert(`Welcome back, ${person}!`);
-    //   navigate("/afterlogin", { state: { person } }); // Redirect to dashboard or home page
-    // } else {
-    //   alert("Invalid email or password. Please try again.");
-    // }
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const user = users.find(
+      (user) => user.email === email && user.password === pass
+    );
+
+    if (user) {
+      const person = user.name;
+      alert(`Welcome back, ${person}!`);
+      navigate("/afterlogin", { state: { person } }); // Redirect to dashboard or home page
+    } else {
+      alert("Invalid email or password. Please try again.");
+    }
   };
-  
 
   return (
     <>
