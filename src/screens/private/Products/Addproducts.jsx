@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+
+import { Link } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa";
 import axios from 'axios';
 import { apiUri } from "../../../services/apiEndPoints";
 import { CustomAlert, CustomLoading } from "../../../components";
@@ -309,9 +312,47 @@ const ProductForm = () => {
       console.warn("Form validation failed.");
     }
   };
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+    const toggleMenu = () => {
+      setIsMenuOpen(!isMenuOpen);
+    };
 
   return (
     <>
+     <div className="flex h-screen">
+      {/* Navbar - 20% Width */}
+      <nav
+        className={`fixed top-0 left-0 h-full w-1/5 bg-gray-800 text-white shadow-md transition-transform duration-300 ease-in-out z-10 ${
+          isMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col items-start space-y-4 p-6 mt-12">
+          <Link to="/addproducts" className="hover:underline">
+            Product
+          </Link>
+          <Link to="/about" className="hover:underline">
+            ABOUT
+          </Link>
+          <Link to="/service" className="hover:underline">
+            SERVICES
+          </Link>
+          <Link to="/portfolio" className="hover:underline">
+            PORTFOLIO
+          </Link>
+          <Link to="/contact" className="hover:underline">
+            CONTACT
+          </Link>
+        </div>
+      </nav>
+
+    <div className="w-4/5 ml-auto flex flex-col items-center justify-center text-center p-10">
+            <button
+              className="absolute top-4 left-4 text-3xl z-20 bg-yellow-500 p-2 rounded"
+              onClick={toggleMenu}
+            >
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
       <form
         onSubmit={handleSubmit}
         className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg shadow-lg space-y-6"
@@ -524,6 +565,8 @@ const ProductForm = () => {
       <CustomLoading
         visible={loading}
       />
+      </div>
+      </div>
     </>
   );
 };

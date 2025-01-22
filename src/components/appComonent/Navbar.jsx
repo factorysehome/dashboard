@@ -19,7 +19,7 @@ const Navbar = () => {
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex flex-col items-start space-y-4 p-6">
+        <div className="flex flex-col items-start space-y-4 p-6 mt-12">
           <Link to="/addproducts" className="hover:underline">
             Product
           </Link>
