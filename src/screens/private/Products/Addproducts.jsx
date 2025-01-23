@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa";
 import axios from 'axios';
 import { apiUri } from "../../../services/apiEndPoints";
 import { CustomAlert, CustomLoading } from "../../../components";
@@ -70,7 +72,6 @@ const ProductForm = () => {
     { key: "Floor Cleaner", label: "Floor Cleaner" },
     { key: "Glass Cleaner", label: "Glass Cleaner" },
     { key: "Hand Wash", label: "Hand Wash" },
-   
   ];
 
   const variants = [
@@ -135,7 +136,7 @@ const ProductForm = () => {
       numberOfRolls: "",
       caseSize: "",
       sku: "",
-      price: " "
+      price: " ",
     },
   ]);
 
@@ -257,15 +258,11 @@ const ProductForm = () => {
           description: formData.description,
           productDetail: filteredProductDetails, // Use filtered details
           image: base64Image,
-          
-          
         };
 
         const fullUrl = `${apiUri.addProductApi}`;
-        // setLoading(true);
         console.log("fullUrl:", fullUrl);
-        console.log("payload", JSON.stringify(payload, null, 2))
-       
+        console.log("payload", JSON.stringify(payload, null, 2));
 
         const response = await axios.post(fullUrl, payload, {
           headers: {
@@ -277,7 +274,6 @@ const ProductForm = () => {
         if (response.status === 201) {
           setLoading(false);
           showAlert("Product added successfully!");
-          // alert("Product added successfully!");
           setFormData({
             category: "",
             productName: "",
@@ -292,8 +288,7 @@ const ProductForm = () => {
               numberOfRolls: "",
               caseSize: "",
               sku: "",
-                price: " "
-
+              price: " ",
             },
           ]); // Reset product details
           setSelectedVariants([]); // Reset selected variants
@@ -310,220 +305,264 @@ const ProductForm = () => {
     }
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <>
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg shadow-lg space-y-6"
-      >
-        <h2 className="text-3xl font-semibold text-white text-center">Product Form</h2>
-
-        <div className="space-y-6">
-          <div className="space-y-4">
-            <label className="block text-lg font-medium text-white">Name:</label>
-            <select
-              value={formData.name}
-              onChange={(e) => handleFormChange("name", e.target.value)}
-              className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="" disabled>
-                Select a Product
-              </option>
-              {Products.map((product) => (
-                <option key={product.key} value={product.key}>
-                  {product.label}
-                </option>
-              ))}
-            </select>
-            {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
+      <div className="flex min-h-screen">
+        {/* Navbar - 20% Width */}
+        <nav
+          className={`fixed top-0 left-0 h-full w-1/5 bg-gray-800 text-white shadow-md transition-transform duration-300 ease-in-out z-10 ${
+            isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="flex flex-col items-start space-y-4 p-6 mt-12">
+            <Link to="/addproducts" className="hover:underline">
+              Add Products
+            </Link>
+            <Link to="/viewproduct" className="hover:underline">
+              View Products
+            </Link>
+            <Link to="/about" className="hover:underline">
+              ABOUT
+            </Link>
+            <Link to="/service" className="hover:underline">
+              SERVICES
+            </Link>
+            <Link to="/portfolio" className="hover:underline">
+              PORTFOLIO
+            </Link>
+            <Link to="/contact" className="hover:underline">
+              CONTACT
+            </Link>
           </div>
+        </nav>
 
-          <div className="space-y-4">
-            <label className="block text-lg font-medium text-white">Category:</label>
-            <select
-              value={formData.category}
-              onChange={(e) => handleFormChange("category", e.target.value)}
-              className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="" disabled>
-                Select a Category
-              </option>
-              {categories.map((category) => (
-                <option key={category.key} value={category.key}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
-            {errors.category && <p className="text-red-600 text-sm">{errors.category}</p>}
-          </div>
+        {/* Main Content - 80% Width */}
+        <div className="w-4/5 ml-auto flex flex-col items-center text-center p-10">
+          <button
+            className="absolute top-4 left-4 text-3xl z-20 bg-yellow-500 p-2 rounded"
+            onClick={toggleMenu}
+          >
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+          <form
+            onSubmit={handleSubmit}
+            className="max-w-4xl w-full mx-auto p-6 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg shadow-lg space-y-6"
+          >
+            <h2 className="text-3xl font-semibold text-white text-center">Product Form</h2>
 
-          <div className="space-y-4">
-            <label className="block text-lg font-medium text-white">Image:</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            {formData.image && (
-              <div className="mt-4">
-                <p className="text-white">Selected Image:</p>
-                <img
-                  src={URL.createObjectURL(formData.image)}
-                  alt="Selected"
-                  className="mt-2 w-30 h-40 object-cover rounded-lg shadow-md"
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <label className="block text-lg font-medium text-white">Name:</label>
+                <select
+                  value={formData.name}
+                  onChange={(e) => handleFormChange("name", e.target.value)}
+                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="" disabled>
+                    Select a Product
+                  </option>
+                  {Products.map((product) => (
+                    <option key={product.key} value={product.key}>
+                      {product.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
+              </div>
+
+              <div className="space-y-4">
+                <label className="block text-lg font-medium text-white">Category:</label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => handleFormChange("category", e.target.value)}
+                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="" disabled>
+                    Select a Category
+                  </option>
+                  {categories.map((category) => (
+                    <option key={category.key} value={category.key}>
+                      {category.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.category && <p className="text-red-600 text-sm">{errors.category}</p>}
+              </div>
+
+              <div className="space-y-4">
+                <label className="block text-lg font-medium text-white">Image:</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
+                {formData.image && (
+                  <div className="mt-4">
+                    <p className="text-white">Selected Image:</p>
+                    <img
+                      src={URL.createObjectURL(formData.image)}
+                      alt="Selected"
+                      className="mt-2 w-30 h-40 object-cover rounded-lg shadow-md"
+                    />
+                  </div>
+                )}
+                {errors.image && <p className="text-red-600 text-sm">{errors.image}</p>}
               </div>
-            )}
-            {errors.image && <p className="text-red-600 text-sm">{errors.image}</p>}
-          </div>
 
-          <div className="space-y-4">
-            <label className="block text-lg font-medium text-white">Description:</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => handleFormChange("description", e.target.value)}
-              className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              rows="4"
-            ></textarea>
-          </div>
+              <div className="space-y-4">
+                <label className="block text-lg font-medium text-white">Description:</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => handleFormChange("description", e.target.value)}
+                  className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  rows="4"
+                ></textarea>
+              </div>
 
-          {/* Variant Selection (Moved to the top) */}
-          <div className="space-y-2">
-            <label className="block text-lg font-medium text-white">Variant:</label>
-            <div className="flex flex-wrap gap-2">
-              {variants.map((variant) => (
-                <label key={variant.key} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    value={variant.key}
-                    checked={selectedVariants.includes(variant.key)}
-                    onChange={() => handleVariantChange(variant.key)}
-                    className="form-checkbox h-5 w-5 text-blue-600"
-                  />
-                  <span className="text-white">{variant.label}</span>
-                </label>
-              ))}
+              {/* Variant Selection */}
+              <div className="space-y-2">
+                <label className="block text-lg font-medium text-white">Variant:</label>
+                <div className="flex flex-wrap gap-2">
+                  {variants.map((variant) => (
+                    <label key={variant.key} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        value={variant.key}
+                        checked={selectedVariants.includes(variant.key)}
+                        onChange={() => handleVariantChange(variant.key)}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      <span className="text-white">{variant.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-2xl text-white">Product Details</h3>
+                {productDetails.map((detail, index) => (
+                  <div key={index} className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="block text-lg font-medium text-white">SKU:</label>
+                      <select
+                        value={detail.sku}
+                        onChange={(e) => handleDetailChange(index, "sku", e.target.value)}
+                        className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        <option value="" disabled>
+                          Select SKU
+                        </option>
+                        {sku.map((item) => (
+                          <option key={item.key} value={item.key}>
+                            {item.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-lg font-medium text-white">Case Size:</label>
+                      <input
+                        type="text"
+                        value={detail.caseSize}
+                        onChange={(e) => handleDetailChange(index, "caseSize", e.target.value)}
+                        className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-lg font-medium text-white">Price:</label>
+                      <input
+                        type="number"
+                        value={detail.price}
+                        onChange={(e) => handleDetailChange(index, "price", e.target.value)}
+                        className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-lg font-medium text-white">Paper Type:</label>
+                      <select
+                        value={detail.paperType}
+                        onChange={(e) => handleDetailChange(index, "paperType", e.target.value)}
+                        className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        <option value="" disabled>
+                          Select Paper Type
+                        </option>
+                        {paperType.map((type) => (
+                          <option key={type.key} value={type.key}>
+                            {type.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-lg font-medium text-white">Number of Rolls:</label>
+                      <input
+                        type="text"
+                        value={detail.numberOfRolls}
+                        onChange={(e) => handleDetailChange(index, "numberOfRolls", e.target.value)}
+                        className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-lg font-medium text-white">Number of Pulls (Per Roll):</label>
+                      <input
+                        type="text"
+                        value={detail.numberOfPulls}
+                        onChange={(e) => handleDetailChange(index, "numberOfPulls", e.target.value)}
+                        className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      />
+                    </div>
+
+                    <div className="flex justify-end space-x-4">
+                      <button
+                        type="button"
+                        onClick={() => removeProductDetail(index)}
+                        className="bg-red-500 text-white py-2 px-4 rounded-lg"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addProductDetail}
+                  className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                >
+                  Add Product Detail
+                </button>
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  className="bg-green-500 text-white py-3 px-6 rounded-lg"
+                >
+                  Submit
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div>
-            <h3 className="text-2xl text-white">Product Details</h3>
-            {productDetails.map((detail, index) => (
-              <div key={index} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block text-lg font-medium text-white">SKU:</label>
-                  <select
-                    value={detail.sku}
-                    onChange={(e) => handleDetailChange(index, "sku", e.target.value)}
-                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  >
-                    <option value="" disabled>
-                      Select SKU
-                    </option>
-                    {sku.map((item) => (
-                      <option key={item.key} value={item.key}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-lg font-medium text-white">Case Size:</label>
-                  <input
-                    type="text"
-                    value={detail.caseSize}
-                    onChange={(e) => handleDetailChange(index, "caseSize", e.target.value)}
-                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-lg font-medium text-white">Price</label>
-                  <input
-                    type="number"
-                    value={detail.price}
-                    onChange={(e) => handleDetailChange(index, "price", e.target.value)}
-                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-lg font-medium text-white">Paper Type:</label>
-                  <select
-                    value={detail.paperType}
-                    onChange={(e) => handleDetailChange(index, "paperType", e.target.value)}
-                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  >
-                    <option value="" disabled>
-                      Select Paper Type
-                    </option>
-                    {paperType.map((type) => (
-                      <option key={type.key} value={type.key}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-lg font-medium text-white">Number of Rolls:</label>
-                  <input
-                    type="text"
-                    value={detail.numberOfRolls}
-                    onChange={(e) => handleDetailChange(index, "numberOfRolls", e.target.value)}
-                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-lg font-medium text-white">Number of Pulls:(Per Roll)</label>
-                  <input
-                    type="text"
-                    value={detail.numberOfPulls}
-                    onChange={(e) => handleDetailChange(index, "numberOfPulls", e.target.value)}
-                    className="w-full p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => removeProductDetail(index)}
-                    className="bg-red-500 text-white py-2 px-4 rounded-lg"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={addProductDetail}
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg"
-            >
-              Add Product Detail
-            </button>
-          </div>
-
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="bg-green-500 text-white py-3 px-6 rounded-lg"
-            >
-              Submit
-            </button>
-          </div>
+          </form>
+          <CustomAlert
+            message={alertMessage}
+            visible={isAlertVisible}
+            onClose={closeAlert}
+          />
+          <CustomLoading visible={loading} />
         </div>
-      </form>
-      <CustomAlert
-        message={alertMessage}
-        visible={isAlertVisible}
-        onClose={closeAlert}
-      />
-      <CustomLoading
-        visible={loading}
-      />
+      </div>
     </>
   );
 };
