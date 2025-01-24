@@ -34,7 +34,7 @@ const Viewproduct = () => {
 
         const data = await response.json();
         if (data.status === "success") {
-          setProducts(data.data.items); // Store the fetched products in state
+          setProducts(data.data.items || []); // Ensure items are set correctly
         }
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -44,9 +44,11 @@ const Viewproduct = () => {
     fetchProducts();
   }, []);
 
-  // Navigate to Edit Product page with product ID
-  const handleEdit = (productId) => {
-    navigate(`/editproduct/${productId}`); // Pass product ID in the URL
+  // Navigate to Edit Product page with product data
+  const handleEdit = (product) => {
+  // console.log("object====<<", JSON.stringify(product, null, 2));
+
+  navigate(`/editproduct/${product._id}`, { state: { product } });
   };
 
   return (
@@ -98,16 +100,16 @@ const Viewproduct = () => {
                     className="bg-white p-6 rounded-lg shadow-md"
                   >
                     <img
-                      src={product.image}
-                      alt={product.name}
+                      src={product.image || "https://via.placeholder.com/150"}
+                      alt={product.name || "Product Image"}
                       className="w-full h-48 object-cover mb-4 rounded cursor-pointer"
-                      onClick={() => handleEdit(product._id)} // Navigate to Edit Product page
+                      onClick={() => handleEdit(product)} // Navigate to Edit Product page
                     />
                     <h2 className="text-xl font-bold mb-2">{product.name}</h2>
                     <p className="text-gray-600 mb-4">{product.category}</p>
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-left">
                       {product.productDetail.map((detail, index) => (
-                        <div key={index} className="text-left">
+                        <div key={index}>
                           <p>
                             <strong>Case Size:</strong> {detail.caseSize}
                           </p>
@@ -115,7 +117,7 @@ const Viewproduct = () => {
                             <strong>SKU:</strong> {detail.sku}
                           </p>
                           <p>
-                            <strong>Price:</strong> {detail.price}
+                            <strong>Price:</strong> ${detail.price}
                           </p>
                           {detail.variants.length > 0 && (
                             <p>
@@ -130,7 +132,7 @@ const Viewproduct = () => {
                 ))}
               </div>
             ) : (
-              <p>No products found.</p>
+              <p className="text-gray-500">No products found.</p>
             )}
           </div>
         </div>
