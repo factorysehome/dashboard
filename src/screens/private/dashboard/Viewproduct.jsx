@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 
 const Viewproduct = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -42,6 +43,11 @@ const Viewproduct = () => {
 
     fetchProducts();
   }, []);
+
+  // Navigate to Edit Product page with product ID
+  const handleEdit = (productId) => {
+    navigate(`/editproduct/${productId}`); // Pass product ID in the URL
+  };
 
   return (
     <>
@@ -94,7 +100,8 @@ const Viewproduct = () => {
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-48 object-cover mb-4 rounded"
+                      className="w-full h-48 object-cover mb-4 rounded cursor-pointer"
+                      onClick={() => handleEdit(product._id)} // Navigate to Edit Product page
                     />
                     <h2 className="text-xl font-bold mb-2">{product.name}</h2>
                     <p className="text-gray-600 mb-4">{product.category}</p>
