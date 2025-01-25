@@ -11,9 +11,36 @@ const Viewproduct = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Fetch product data from the API
+  // Cache expiry time (5 minutes)
+  const CACHE_EXPIRY_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+  // Fetch product data from the API or use cached data
   useEffect(() => {
     const fetchProducts = async () => {
+      // Check if the page was reloaded
+      const isPageReloaded = !sessionStorage.getItem("isPageReloaded");
+
+      if (isPageReloaded) {
+        // If the page was reloaded, clear the cache and fetch fresh data
+        localStorage.removeItem("cachedProducts");
+        localStorage.removeItem("cachedTimestamp");
+        sessionStorage.setItem("isPageReloaded", "true"); // Mark the page as reloaded
+      }
+
+      // Check if products are cached and not expired
+      const cachedProducts = localStorage.getItem("cachedProducts");
+      const cachedTimestamp = localStorage.getItem("cachedTimestamp");
+
+      if (cachedProducts && cachedTimestamp) {
+        const now = new Date().getTime();
+        if (now - cachedTimestamp < CACHE_EXPIRY_TIME) {
+          // Use cached data if it's within the expiry time
+          setProducts(JSON.parse(cachedProducts));
+          return;
+        }
+      }
+
+      // If cache is expired or doesn't exist, fetch fresh data from the API
       try {
         const response = await fetch(
           "https://factoryseghar-backend.onrender.com/api/getItems",
@@ -34,7 +61,12 @@ const Viewproduct = () => {
 
         const data = await response.json();
         if (data.status === "success") {
-          setProducts(data.data.items || []); // Ensure items are set correctly
+          const items = data.data.items || [];
+          setProducts(items); // Update state with fetched data
+
+          // Cache the fetched data and the current timestamp
+          localStorage.setItem("cachedProducts", JSON.stringify(items));
+          localStorage.setItem("cachedTimestamp", new Date().getTime());
         }
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -46,9 +78,7 @@ const Viewproduct = () => {
 
   // Navigate to Edit Product page with product data
   const handleEdit = (product) => {
-  // console.log("object====<<", JSON.stringify(product, null, 2));
-
-  navigate(`/editproduct/${product._id}`, { state: { product } });
+    navigate(`/editproduct/${product._id}`, { state: { product } });
   };
 
   return (
