@@ -126,39 +126,39 @@ const Viewproduct = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
                   <div
-                    key={product._id}
-                    className="bg-white p-6 rounded-lg shadow-md"
-                  >
-                    <img
-                      src={product.image || "https://via.placeholder.com/150"}
-                      alt={product.name || "Product Image"}
-                      className="w-full h-48 object-cover mb-4 rounded cursor-pointer"
-                      onClick={() => handleEdit(product)} // Navigate to Edit Product page
-                    />
-                    <h2 className="text-xl font-bold mb-2">{product.name}</h2>
-                    <p className="text-gray-600 mb-4">{product.category}</p>
-                    <div className="space-y-2 text-left">
-                      {product.productDetail.map((detail, index) => (
-                        <div key={index}>
+                  key={product._id}
+                  className="bg-white p-6 rounded-lg shadow-md"
+                >
+                  <img
+                    src={product.image || "https://via.placeholder.com/150"}
+                    alt={product.name || "Product Image"}
+                    className="w-full h-48 object-contain mb-4 rounded cursor-pointer"
+                    onClick={() => handleEdit(product)} // Navigate to Edit Product page
+                  />
+                  <h2 className="text-xl font-bold mb-2">{product.name}</h2>
+                  <p className="text-gray-600 mb-4">{product.category}</p>
+                  <div className="space-y-2 text-left">
+                    {product.productDetail.map((detail, index) => (
+                      <div key={index}>
+                        <p>
+                          <strong>Case Size:</strong> {detail.caseSize}
+                        </p>
+                        <p>
+                          <strong>SKU:</strong> {detail.sku}
+                        </p>
+                        <p>
+                          <strong>Price:</strong> ${detail.price}
+                        </p>
+                        {detail.variants.length > 0 && (
                           <p>
-                            <strong>Case Size:</strong> {detail.caseSize}
+                            <strong>Variants:</strong>{" "}
+                            {detail.variants.join(", ")}
                           </p>
-                          <p>
-                            <strong>SKU:</strong> {detail.sku}
-                          </p>
-                          <p>
-                            <strong>Price:</strong> ${detail.price}
-                          </p>
-                          {detail.variants.length > 0 && (
-                            <p>
-                              <strong>Variants:</strong>{" "}
-                              {detail.variants.join(", ")}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
+                </div>
                 ))}
               </div>
             ) : (

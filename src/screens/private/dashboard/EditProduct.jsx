@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios"; // Import axios
 
 const EditProduct = () => {
   const location = useLocation();
@@ -11,7 +12,7 @@ const EditProduct = () => {
     name: product?.name || "",
     category: product?.category || "",
     description: product?.description || "",
-    productDetail: product?.productDetail || [],
+    productDetail: product?.productDetail || [], // Ensure productDetail is an array
   });
 
   // Handle input changes for top-level fields (name, category, description)
@@ -35,43 +36,56 @@ const EditProduct = () => {
     const payload = {
       name: formData.name,
       category: formData.category,
-      description: formData.description,
-      productDetail: formData.productDetail.map((detail) => ({
+      _id: product._id, // Include the _id in the payload
+    };
+
+    // Add description to payload only if it exists
+    if (formData.description.trim()) {
+      payload.description = formData.description;
+    }
+
+    // Add productDetail to payload
+    payload.productDetail = formData.productDetail.map((detail) => {
+      const productDetailItem = {
         caseSize: detail.caseSize,
         sku: detail.sku,
         price: detail.price,
-        variants: Array.isArray(detail.variants)
+      };
+
+      // Add variants to productDetailItem only if they exist
+      if (detail.variants && detail.variants.length > 0) {
+        productDetailItem.variants = Array.isArray(detail.variants)
           ? detail.variants
-          : detail.variants.split(",").map((v) => v.trim()), // Ensure variants is an array
-      })),
-    };
+          : detail.variants.split(",").map((v) => v.trim());
+      }
+
+      return productDetailItem;
+    });
 
     console.log("Payload:", JSON.stringify(payload, null, 2));
 
     try {
-      const response = await fetch(
-        `https://factoryseghar-backend.onrender.com/api/updateItem/${product._id}`,
+      // Use axios to make the PUT request
+      const response = await axios.put(
+        "https://factoryseghar-backend.onrender.com/api/updateItems",
+        payload,
         {
-          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload),
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to update product");
-      }
-
-      const data = await response.json();
-      if (data.status === "success") {
+      if (response.data.status === "success") {
         alert("Product updated successfully!");
         navigate("/viewproduct"); // Redirect to the product list page
+      } else {
+        throw new Error(response.data.message || "Failed to update product");
       }
     } catch (error) {
       console.error("Error updating product:", error);
-      alert("Failed to update product. Please try again.");
+      console.log("Error details:", error.response?.data || error.message);
+      alert(error.response?.data?.message || "Failed to update product. Please try again.");
     }
   };
 
@@ -101,6 +115,7 @@ const EditProduct = () => {
             value={formData.name}
             onChange={handleInputChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            required // Ensure the field is required
           />
         </div>
 
@@ -115,6 +130,7 @@ const EditProduct = () => {
             value={formData.category}
             onChange={handleInputChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            required // Ensure the field is required
           />
         </div>
 
@@ -150,6 +166,7 @@ const EditProduct = () => {
                   handleDetailChange(index, "caseSize", e.target.value)
                 }
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                required // Ensure the field is required
               />
             </div>
 
@@ -165,6 +182,7 @@ const EditProduct = () => {
                   handleDetailChange(index, "sku", e.target.value)
                 }
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                required // Ensure the field is required
               />
             </div>
 
@@ -180,6 +198,7 @@ const EditProduct = () => {
                   handleDetailChange(index, "price", e.target.value)
                 }
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                required // Ensure the field is required
               />
             </div>
 
