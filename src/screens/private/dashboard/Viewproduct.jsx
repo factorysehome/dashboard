@@ -65,8 +65,8 @@ const Viewproduct = () => {
           setProducts(items); // Update state with fetched data
 
           // Cache the fetched data and the current timestamp
-          localStorage.setItem("cachedProducts", JSON.stringify(items));
-          localStorage.setItem("cachedTimestamp", new Date().getTime());
+          // localStorage.setItem("cachedProducts", JSON.stringify(items));
+          // localStorage.setItem("cachedTimestamp", new Date().getTime());
         }
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -149,7 +149,7 @@ const Viewproduct = () => {
                         <p>
                           <strong>Price:</strong> ${detail.price}
                         </p>
-                        {detail.variants.length > 0 && (
+                        {detail?.variants?.length > 0 && (
                           <p>
                             <strong>Variants:</strong>{" "}
                             {detail.variants.join(", ")}

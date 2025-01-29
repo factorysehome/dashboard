@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import { Forget, Login, Register } from "./screens/public/index";
 import Afterlogin from "./screens/private/Afterlogin";
@@ -12,25 +11,34 @@ import Service from "./screens/private/dashboard/Service";
 import Viewproduct from "./screens/private/dashboard/Viewproduct";
 import EditProduct from "./screens/private/dashboard/EditProduct";
 
-function App() {
-  const [count, setCount] = useState(0);
+const ProtectedRoute = ({ element }) => {
+  const isAuthenticated = localStorage.getItem("loggedInUser") !== null;
+  return isAuthenticated ? element : <Navigate to="/login" />;
+};
 
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login to="/dashboard" />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard to="/dashboard" />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forget" element={<Forget />} />
-        <Route path="/afterlogin" element={<Afterlogin />} />
-        <Route path="/addproducts" element={<Addproducts />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/portfolio" element={<Portfolio />} />
-        <Route path="/service" element={<Service />} />
-        <Route path="/viewproduct" element={<Viewproduct />} />
-        <Route path="/editproduct/:id" element={<EditProduct />} />
+        
+        <Route path="/" element={<Navigate to="/login" />} /> {/* Redirect to login on '/' */}
+        
+        {/* Protected routes */}
+        <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
+        <Route path="/afterlogin" element={<ProtectedRoute element={<Afterlogin />} />} />
+        <Route path="/addproducts" element={<ProtectedRoute element={<Addproducts />} />} />
+        <Route path="/about" element={<ProtectedRoute element={<About />} />} />
+        <Route path="/contact" element={<ProtectedRoute element={<Contact />} />} />
+        <Route path="/portfolio" element={<ProtectedRoute element={<Portfolio />} />} />
+        <Route path="/service" element={<ProtectedRoute element={<Service />} />} />
+        <Route path="/viewproduct" element={<ProtectedRoute element={<Viewproduct />} />} />
+        <Route path="/editproduct/:id" element={<ProtectedRoute element={<EditProduct />} />} />
+        
+        {/* 404 */}
+        <Route path="*" element={<h1 className="text-center text-3xl mt-[300px]">No Page Found</h1>} />
       </Routes>
     </BrowserRouter>
   );

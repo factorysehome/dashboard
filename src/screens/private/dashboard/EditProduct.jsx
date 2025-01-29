@@ -66,7 +66,7 @@ const EditProduct = () => {
 
     try {
       // Use axios to make the PUT request
-      const response = await axios.put(
+      const response = await axios.post(
         "https://factoryseghar-backend.onrender.com/api/updateItems",
         payload,
         {
