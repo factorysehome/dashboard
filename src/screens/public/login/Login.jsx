@@ -24,7 +24,7 @@ const Login = () => {
       localStorage.setItem("loggedInUser", JSON.stringify(user)); // Store user info
 
       alert("Login successful! Welcome to the dashboard.");
-      navigate("/afterlogin"); // Redirect to afterlogin page
+      navigate("/dashboard"); 
     } else {
       alert("Invalid email or password. Please try again.");
     }

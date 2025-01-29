@@ -5,14 +5,12 @@ import { FaBars, FaTimes } from "react-icons/fa";
 const Navbar = ({ isMenuOpen, toggleMenu }) => {
   const navigate = useNavigate();
 
+  // Logout handler to clear localStorage and redirect to login
   const handleLogout = () => {
-    // Clear the user data from localStorage
+    // Remove user info from localStorage
     localStorage.removeItem("loggedInUser");
-
-    // Show a logout message (Optional)
-    alert("You have been logged out.");
-
-    // Redirect the user to the login page
+    
+    // Redirect to login page
     navigate("/login");
   };
 
@@ -22,7 +20,7 @@ const Navbar = ({ isMenuOpen, toggleMenu }) => {
         isMenuOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="flex flex-col items-start space-y-4 p-6 mt-12">
+      <div className="flex flex-col items-start space-y-4 p-6 mt-12 flex-grow">
         <Link to="/addproducts" className="hover:underline">
           Add Products
         </Link>
@@ -30,25 +28,19 @@ const Navbar = ({ isMenuOpen, toggleMenu }) => {
           View Products
         </Link>
         <Link to="/orderinfo" className="hover:underline">
-          Order Info
+          Order History
         </Link>
+      </div>
 
-        {/* Logout Button */}
+      {/* Logout Button at the bottom */}
+      <div className="mb-6 mx-6 mt-[650px]">
         <button
           onClick={handleLogout}
-          className="mt-4 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+          className="w-full bg-red-600 p-2 rounded hover:bg-red-700 "
         >
           Logout
         </button>
       </div>
-
-      {/* Menu toggle button */}
-      <button
-        className="absolute top-4 left-4 text-3xl z-20 bg-yellow-500 p-2 rounded"
-        onClick={toggleMenu}
-      >
-        {isMenuOpen ? <FaTimes /> : <FaBars />}
-      </button>
     </nav>
   );
 };
