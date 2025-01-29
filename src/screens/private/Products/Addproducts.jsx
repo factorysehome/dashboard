@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
+
 import axios from 'axios';
 import { apiUri } from "../../../services/apiEndPoints";
 import { CustomAlert, CustomLoading } from "../../../components";
+import { FaBars, FaTimes } from "react-icons/fa";
+import Navbar from "../../public/Navbar/Navbar";
 
 const ProductForm = () => {
   const [alertMessage, setAlertMessage] = useState("");
@@ -315,32 +317,7 @@ const ProductForm = () => {
     <>
       <div className="flex min-h-screen">
         {/* Navbar - 20% Width */}
-        <nav
-          className={`fixed top-0 left-0 h-full w-1/5 bg-gray-800 text-white shadow-md transition-transform duration-300 ease-in-out z-10 ${
-            isMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          <div className="flex flex-col items-start space-y-4 p-6 mt-12">
-            <Link to="/addproducts" className="hover:underline">
-              Add Products
-            </Link>
-            <Link to="/viewproduct" className="hover:underline">
-              View Products
-            </Link>
-            <Link to="/about" className="hover:underline">
-              ABOUT
-            </Link>
-            <Link to="/service" className="hover:underline">
-              SERVICES
-            </Link>
-            <Link to="/portfolio" className="hover:underline">
-              PORTFOLIO
-            </Link>
-            <Link to="/contact" className="hover:underline">
-              CONTACT
-            </Link>
-          </div>
-        </nav>
+        <Navbar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
 
         {/* Main Content - 80% Width */}
         <div className="w-4/5 ml-auto flex flex-col items-center text-center p-10">
