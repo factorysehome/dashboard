@@ -15,7 +15,15 @@ const Landingpage = () => {
           
           {/* Links */}
           <div className="space-x-6">
-            <Link to="/about" className="hover:underline">About</Link>
+             <Link
+                              to={{
+                                pathname: "/footerinfo",
+                                search: "?page=about",
+                              }}
+                              className="hover:text-white transition-colors"
+                            >
+                              About us
+                            </Link>
             <Link to="/login" className="hover:underline">Login</Link>
           </div>
         </div>

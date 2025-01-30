@@ -110,7 +110,7 @@ const Login = () => {
               Don’t have an account? <Link to="/register">Signup</Link>
             </p> */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-0 mt-3">
-              <Link to="https://www.google.com" className="text-sm lg:text-base hover:underline hover:text-green-500">
+              <Link to="/termsandcondition" className="text-sm lg:text-base hover:underline hover:text-green-500">
                 Terms & conditions
               </Link>
               <Link to="https://www.google.com" className="text-sm lg:text-base hover:underline hover:text-green-500">

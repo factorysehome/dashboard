@@ -3,12 +3,14 @@ import "./App.css";
 import { Forget, Login, Register } from "./screens/public/index";
 import Afterlogin from "./screens/private/Afterlogin";
 import Addproducts from "./screens/private/products/Addproducts";
+import Footerinfo from "./screens/private/dashboard/Footerinfo";
 
 
 import Service from "./screens/private/dashboard/Service";
 import Viewproduct from "./screens/private/dashboard/Viewproduct";
 import EditProduct from "./screens/private/dashboard/EditProduct";
 import Landingpage from "./screens/private/dashboard/Landingpage";
+
 
 const ProtectedRoute = ({ element }) => {
   const isAuthenticated = localStorage.getItem("loggedInUser") !== null;
@@ -23,6 +25,8 @@ function App() {
         {/* <Route path="/register" element={<Register />} /> */}
         {/* <Route path="/forget" element={<Forget />} /> */}
         <Route path="/" element={<Landingpage />} />
+       
+        <Route path="/footerinfo" element={<Footerinfo />} />
         
         {/* <Route path="/" element={<Navigate to="/login" />} />  */}
         
