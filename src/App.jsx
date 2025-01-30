@@ -9,6 +9,7 @@ import Service from "./screens/private/dashboard/Service";
 import Viewproduct from "./screens/private/dashboard/Viewproduct";
 import EditProduct from "./screens/private/dashboard/EditProduct";
 import Landingpage from "./screens/private/dashboard/Landingpage";
+import Termsandcondition from "./screens/private/dashboard/Termsandcondition";
 
 const ProtectedRoute = ({ element }) => {
   const isAuthenticated = localStorage.getItem("loggedInUser") !== null;
@@ -23,6 +24,7 @@ function App() {
         {/* <Route path="/register" element={<Register />} /> */}
         {/* <Route path="/forget" element={<Forget />} /> */}
         <Route path="/" element={<Landingpage />} />
+        <Route path="/termsandcondition" element={<Termsandcondition />} />
         
         {/* <Route path="/" element={<Navigate to="/login" />} />  */}
         

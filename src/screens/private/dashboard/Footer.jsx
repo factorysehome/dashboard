@@ -41,7 +41,7 @@ const Footer = () => {
 
           {/* Terms and Conditions Section */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Terms & Conditions</h3>
+            <Link to="/termsandcondition" className="text-xl font-bold mb-4">Terms & Conditions</Link >
             <ul className="text-gray-400">
               <li className="mb-2">
                 <Link to="/terms" className="hover:text-white transition-colors">
