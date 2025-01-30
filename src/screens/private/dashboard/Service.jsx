@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../../public/Navbar/Navbar";
 import { FaBars, FaTimes } from "react-icons/fa";
+import Footer from "./Footer";
 
 const Service = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,6 +36,7 @@ const Service = () => {
   }, []);
 
   return (
+    <>
     <div className="flex h-screen">
       {/* Navbar Component */}
       <Navbar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
@@ -123,6 +125,7 @@ const Service = () => {
         )}
       </div>
     </div>
+    <Footer/></>
   );
 };
 

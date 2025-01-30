@@ -8,6 +8,7 @@ import Addproducts from "./screens/private/products/Addproducts";
 import Service from "./screens/private/dashboard/Service";
 import Viewproduct from "./screens/private/dashboard/Viewproduct";
 import EditProduct from "./screens/private/dashboard/EditProduct";
+import Landingpage from "./screens/private/dashboard/Landingpage";
 
 const ProtectedRoute = ({ element }) => {
   const isAuthenticated = localStorage.getItem("loggedInUser") !== null;
@@ -19,10 +20,11 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forget" element={<Forget />} />
+        {/* <Route path="/register" element={<Register />} /> */}
+        {/* <Route path="/forget" element={<Forget />} /> */}
+        <Route path="/" element={<Landingpage />} />
         
-        <Route path="/" element={<Navigate to="/login" />} /> {/* Redirect to login on '/' */}
+        {/* <Route path="/" element={<Navigate to="/login" />} />  */}
         
         {/* Protected routes */}
    

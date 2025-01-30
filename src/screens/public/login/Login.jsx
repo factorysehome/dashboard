@@ -3,6 +3,7 @@ import C_TextInput from "../../../components/commonCom/C_TextInput";
 import Logo from "../../../components/appComonent/Logo";
 import C_button from "../../../components/commonCom/C_button";
 import { Link, useNavigate } from "react-router-dom";
+import Footer from "../../private/dashboard/Footer";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,13 +16,13 @@ const Login = () => {
   const handleClick = (event) => {
     event.preventDefault();
 
-    // Hardcoded credentials
+   
     const validEmail = "a@a.com";
     const validPass = "1234";
 
     if (email === validEmail && pass === validPass) {
       const user = { email, isLoggedIn: true };
-      localStorage.setItem("loggedInUser", JSON.stringify(user)); // Store user info
+      localStorage.setItem("loggedInUser", JSON.stringify(user)); 
 
       alert("Login successful! Welcome to the dashboard.");
       navigate("/dashboard"); 
@@ -31,13 +32,14 @@ const Login = () => {
   };
 
   return (
+   <>
     <div className="bg-black min-h-screen w-full flex flex-col lg:grid lg:grid-cols-2">
       {/* Left Section */}
       <div className="h-full text-white bg-black flex flex-col items-center justify-center p-4 lg:p-0">
         <p className="text-4xl lg:text-7xl text-center">Welcome Back .!</p>
-        <i className="p-4 text-2xl lg:text-4xl rounded border border-white mt-6 text-center">
+        {/* <i className="p-4 text-2xl lg:text-4xl rounded border border-white mt-6 text-center">
           Skip the lag?
-        </i>
+        </i> */}
       </div>
 
       {/* Right Section */}
@@ -69,17 +71,17 @@ const Login = () => {
           </div>
 
           <div className="flex items-start mb-5">
-            <input
+            {/* <input
               id="remember"
               type="checkbox"
               className="w-4 h-4 border border-gray-300 rounded bg-gray-50"
-            />
-            <label
+            /> */}
+            {/* <label
               htmlFor="remember"
               className="ms-2 text-sm lg:text-base font-medium text-white"
             >
               Remember me
-            </label>
+            </label> */}
           </div>
 
           {/* Login Button */}
@@ -87,41 +89,43 @@ const Login = () => {
           <br />
 
           {/* Forgot Password */}
-          <Link to="/forget" className="mt-5 text-sm lg:text-base">
+          {/* <Link to="/forget" className="mt-5 text-sm lg:text-base">
             Forget Password?
-          </Link>
+          </Link> */}
 
           {/* Divider */}
-          <div className="inline-flex items-center justify-center w-full relative">
+          {/* <div className="inline-flex items-center justify-center w-full relative">
             <hr className="w-48 lg:w-64 h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
             <span className="absolute px-2 font-medium text-white -translate-x-1/2 left-1/2 bg-black">
               or
             </span>
-          </div>
+          </div> */}
 
           {/* Logo */}
-          <Logo className="mt-2" />
+          {/* <Logo className="mt-2" /> */}
 
           {/* Signup and Footer Links */}
           <div className="mt-5 text-center">
-            <p className="text-sm lg:text-base">
+            {/* <p className="text-sm lg:text-base">
               Don’t have an account? <Link to="/register">Signup</Link>
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-0 mt-3">
-              <a href="https://www.google.com" className="text-sm lg:text-base">
+            </p> */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-0 mt-3">
+              <Link to="https://www.google.com" className="text-sm lg:text-base hover:underline hover:text-green-500">
                 Terms & conditions
-              </a>
-              <a href="https://www.google.com" className="text-sm lg:text-base">
+              </Link>
+              <Link to="https://www.google.com" className="text-sm lg:text-base hover:underline hover:text-green-500">
                 Support
-              </a>
-              <a href="https://www.google.com" className="text-sm lg:text-base">
+              </Link>
+              {/* <a href="https://www.google.com" className="text-sm lg:text-base">
                 Customer Care
-              </a>
+              </a> */}
             </div>
           </div>
         </form>
       </div>
+     
     </div>
+    <Footer/></>
   );
 };
 
