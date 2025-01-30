@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import Navbar from "../public/Navbar/Navbar";
+import Footer from "../private/dashboard/Footer";
 
 const Viewproduct = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -143,6 +144,7 @@ const Viewproduct = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </>
   );
 };

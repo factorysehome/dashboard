@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios"; // Import axios
+import Footer from "./Footer";
 
 const EditProduct = () => {
   const location = useLocation();
@@ -90,6 +91,7 @@ const EditProduct = () => {
   };
 
   return (
+    <>
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6 text-center">Edit Product</h1>
 
@@ -234,6 +236,7 @@ const EditProduct = () => {
         </div>
       </form>
     </div>
+    <Footer/></>
   );
 };
 
